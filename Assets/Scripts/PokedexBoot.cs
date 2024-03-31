@@ -2,6 +2,7 @@ using MagicTween;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public class PokedexBoot : MonoBehaviour
@@ -17,11 +18,13 @@ public class PokedexBoot : MonoBehaviour
     [SerializeField] private Image pokedexMask;
     [SerializeField] private float maskAlphaDuration;
 
-    [SerializeField]private float delayBeforeMaskFade;
+    [SerializeField] private float delayBeforeMaskFade;
+
+    [SerializeField] private float delayAfterMaskFadeUntilSceneLoad;
     // Start is called before the first frame update
     void Awake()
     {
-        InitialPokedexPosY = transform.position.y; 
+        InitialPokedexPosY = transform.position.y;
     }
 
     // Update is called once per frame
@@ -39,6 +42,11 @@ public class PokedexBoot : MonoBehaviour
             pokedexMask.TweenColorAlpha(1, maskAlphaDuration).SetDelay(delayBeforeMaskFade).Play();
             Tween.FromTo(x => upperDisplayCamera.orthographicSize = x, upperDisplayCamera.orthographicSize, 0, cameraSizeChangeDuration).SetDelay(delayBeforeMaskFade).Play();
             Tween.FromTo(x => lowerDisplayCamera.orthographicSize = x, lowerDisplayCamera.orthographicSize, 0, cameraSizeChangeDuration).SetDelay(delayBeforeMaskFade).Play();
+            Tween.DelayedCall(maskAlphaDuration + delayBeforeMaskFade + delayAfterMaskFadeUntilSceneLoad, () =>
+            {
+                Tween.KillAll();
+                SceneManager.LoadScene("Scene_PokedexView");
+            }).Play();
         });
     }
 }
